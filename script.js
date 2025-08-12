@@ -1,20 +1,22 @@
-// Smooth scroll for sidebar navigation
+// Smooth scroll & sidebar navigation highlight
 document.addEventListener('DOMContentLoaded', function () {
-  // Sidebar active highlight & smooth scroll
+  // Sidebar smooth scroll and active highlight
   document.querySelectorAll('.sidebar a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
       e.preventDefault();
-      const target = document.querySelector(this.getAttribute('href'));
+      const targetId = this.getAttribute('href');
+      const target = document.querySelector(targetId);
       if (target) {
         target.scrollIntoView({ behavior: 'smooth' });
       }
+      // Remove and set active class
       document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
       this.classList.add('active');
     });
   });
 
-  // Highlight sidebar item on scroll according to visible section
-  window.addEventListener('scroll', function () {
+  // Highlight sidebar item on scroll based on visible section
+  function updateSidebarActive() {
     const sections = document.querySelectorAll('section.main-section');
     let currentId = '';
     sections.forEach(section => {
@@ -28,23 +30,27 @@ document.addEventListener('DOMContentLoaded', function () {
       const activeLink = document.querySelector('.sidebar a[href="#' + currentId + '"]');
       if (activeLink) activeLink.classList.add('active');
     }
-  });
+  }
+  window.addEventListener('scroll', updateSidebarActive);
 
-  // Tambahan Slide dengan Swiper.js
-  const swiper = new Swiper('.swiper', {
-    loop: true,
-    grabCursor: true,
-    effect: 'slide',
-    autoplay: {
-      delay: 3000,
-      disableOnInteraction: false,
-    },
-    pagination: {
-      el: '.swiper-pagination',
-      clickable: true,
-    },
-  });
-  // Optional: Animate timeline dots when visible on scroll
+  // Swiper.js setup for about section images
+  if (typeof Swiper !== "undefined") {
+    new Swiper('.swiper', {
+      loop: true,
+      grabCursor: true,
+      effect: 'slide',
+      autoplay: {
+        delay: 3000,
+        disableOnInteraction: false,
+      },
+      pagination: {
+        el: '.swiper-pagination',
+        clickable: true,
+      },
+    });
+  }
+
+  // Animate timeline dots when visible on scroll
   const timelineDots = document.querySelectorAll('.timeline-dot');
   function animateTimelineDots() {
     timelineDots.forEach(dot => {
@@ -57,5 +63,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
   window.addEventListener('scroll', animateTimelineDots);
+
+  // Initial triggers
+  updateSidebarActive();
   animateTimelineDots();
 });
